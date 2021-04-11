@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Agency04Movies</string>
+
+    <string name="errorDescription">Oh no, we encountered a problem. Please try again and if it doesn\'t work then try some time later.</string>
+    <string name="errorTitle">Error</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="similarMovies">Similar movies as</string>
+    <string name="title">Title :</string>
+    <string name="releaseDate">Release date :</string>
+    <string name="genres">Genres :</string>
+    <string name="popular">Popular</string>
+    <string name="topRated">Top rated</string>
+    <string name="movies">Movies</string>
+    <string name="noInternetTitle">No internet connection</string>
+    <string name="noInternetDescriptionMainActivity">You are not connected to the internet. Make sure your Wi-Fi or mobile data is on so we can refresh the movie list.</string>
+    <string name="noInternetDescriptionMainActivity2">You are not connected to the internet. Make sure your Wi-Fi or mobile data is on so you can access all the movie data. Some parts like images may be missing while your connection is gone.</string>
+    <string name="noInternetDescriptionMovieDetailActivity">You are not connected to the internet. Make sure your Wi-Fi or mobile data is on so we can get the movie detail.</string>
+    <string name="noInternetDescriptionMovieDetailActivity2">You are not connected to the internet. Make sure your Wi-Fi or mobile data is on so you can access all the movie data. Some parts like images may be missing while your connection is gone.</string>
+    <string name="noInternetDescriptionSimilarMoviesActivity">You are not connected to the internet. Make sure your Wi-Fi or mobile data is on so we can get similar movies for your selection.</string>
+    <string name="retry">Retry</string>
+    <string name="noSimilarMovies">There is no similar movies regarding your search. Please try with another one.</string>
+</resources>
