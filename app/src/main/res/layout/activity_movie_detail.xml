@@ -35,7 +35,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/MovieDetailProgressBar"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@+id/MovieDetailAppBarLayout" />
 
     <LinearLayout
-        android:id="@+id/NoInternetLinearLayout2"
+        android:id="@+id/MovieDetailNoInternetLinearLayout2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -89,7 +89,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/NoInternetLinearLayout2">
+        app:layout_constraintTop_toBottomOf="@+id/MovieDetailNoInternetLinearLayout2">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -190,7 +190,7 @@
     </ScrollView>
 
     <LinearLayout
-        android:id="@+id/NoInternetLinearLayout"
+        android:id="@+id/MovieDetailNoInternetLinearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"

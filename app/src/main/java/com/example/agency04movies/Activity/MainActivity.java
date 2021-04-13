@@ -6,12 +6,8 @@ and finally inserted in viewpager.
 
 package com.example.agency04movies.Activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.agency04movies.BroadcastReceivers.MainActivityNetworkReceiver;
 import com.example.agency04movies.R;
 import com.example.agency04movies.ViewPagerAdapter.ViewPagerAdapter;
 import com.example.agency04movies.Viewmodel.MainActivityViewModel;
@@ -41,49 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private ViewPagerAdapter pagerAdapter;
     private TabLayout tabLayout;
-    private ArrayList<Fragment> fragmentArrayList = new ArrayList<>();
-    //lockVariable is responsible for deciding the outcome of no internet textViews that is what variation of it will show depending
-    // if there is data in fragments or there is no data
-    private boolean lockVariable = false;
-    private NetworkReceiver receiver;
-
-    public class NetworkReceiver extends BroadcastReceiver {
-
-        /*Detects changes in network connectivity and acts accordingly. If there is no connection shows a warning and if connection
-        connection comes back removes warning and refreshes data if needed.*/
-
-        private final MainActivityViewModel mainActivityViewModel;
-
-        public NetworkReceiver(MainActivityViewModel mainActivityViewModel) {
-            this.mainActivityViewModel = mainActivityViewModel;
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager conn = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = conn.getActiveNetworkInfo();
-
-            if (networkInfo != null && (networkInfo.getType() == ConnectivityManager.TYPE_WIFI || networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)) {
-                if (fragmentArrayList.size() == 0) {
-                    binding.NoInternetLinearLayout.setVisibility(View.GONE);
-
-                } else {
-                    binding.NoInternetLinearLayout2.setVisibility(View.GONE);
-                }
-                if (fragmentArrayList.size() == 0 && lockVariable) {
-                    binding.progressBar.setVisibility(View.VISIBLE);
-                    mainActivityViewModel.getPopularMovies();
-                }
-            } else {
-                if (fragmentArrayList.size() == 0) {
-                    binding.NoInternetLinearLayout.setVisibility(View.VISIBLE);
-
-                } else {
-                    binding.NoInternetLinearLayout2.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-    }
+    private MainActivityNetworkReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,13 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager = binding.MainViewPager;
         tabLayout = binding.MainTabLayout;
-        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.MainActivityProgressBar.setVisibility(View.VISIBLE);
 
         MainActivityViewModel mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
         mainActivityViewModel.getThrowableLiveData().observe(this, throwable -> {
-            lockVariable = true;
-            binding.progressBar.setVisibility(View.GONE);
+            receiver.setLockVariable(true);
+            binding.MainActivityProgressBar.setVisibility(View.GONE);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(getString(R.string.errorDescription));
             builder.setTitle(getString(R.string.errorTitle));
@@ -115,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mainActivityViewModel.getFragments().observe(this, fragments -> {
-            fragmentArrayList = fragments;
+            receiver.setFragmentArrayList(fragments);
             if (fragments.size() != 0) {
-                lockVariable = true;
+                receiver.setLockVariable(true);
             }
             pagerAdapter = new ViewPagerAdapter(this, fragments);
             viewPager.setAdapter(pagerAdapter);
-            binding.progressBar.setVisibility(View.GONE);
+            binding.MainActivityProgressBar.setVisibility(View.GONE);
             pagerAdapter.setFragments(fragments);
 
             new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
@@ -137,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receiver = new NetworkReceiver(mainActivityViewModel);
+        receiver = new MainActivityNetworkReceiver(mainActivityViewModel, this);
         this.registerReceiver(receiver, filter);
     }
 

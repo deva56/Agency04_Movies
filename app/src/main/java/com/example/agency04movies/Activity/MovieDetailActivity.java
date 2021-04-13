@@ -5,12 +5,9 @@ Contains button for finding similar movies if there are any.
 
 package com.example.agency04movies.Activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.example.agency04movies.Models.MoviesItem;
+import com.example.agency04movies.BroadcastReceivers.MovieDetailNetworkReceiver;
 import com.example.agency04movies.Models.MoviesItemGenreIDs;
 import com.example.agency04movies.R;
 import com.example.agency04movies.Viewmodel.MovieDetailActivityViewModel;
@@ -43,47 +40,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private ActivityMovieDetailBinding binding;
     String currentMovieID;
     String currentMovieTitle;
-    private MoviesItem moviesItem;
-    private NetworkReceiver receiver;
-
-    public class NetworkReceiver extends BroadcastReceiver {
-
-        /*Detects changes in network connectivity and acts accordingly. If there is no connection shows a warning and if connection
-       connection comes back removes warning and refreshes data if needed.*/
-
-        private final MovieDetailActivityViewModel movieDetailActivityViewModel;
-        private final String movieID;
-
-        public NetworkReceiver(MovieDetailActivityViewModel movieDetailActivityViewModel, String movieID) {
-            this.movieDetailActivityViewModel = movieDetailActivityViewModel;
-            this.movieID = movieID;
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager conn = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = conn.getActiveNetworkInfo();
-
-            if (networkInfo != null && (networkInfo.getType() == ConnectivityManager.TYPE_WIFI || networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)) {
-                if (moviesItem == null) {
-                    binding.NoInternetLinearLayout.setVisibility(View.GONE);
-                } else {
-                    binding.NoInternetLinearLayout2.setVisibility(View.GONE);
-                }
-                if (moviesItem == null) {
-                    binding.progressBar.setVisibility(View.VISIBLE);
-                    movieDetailActivityViewModel.getMovieDetailFromNetwork(movieID);
-                }
-            } else {
-                if (moviesItem == null) {
-                    binding.NoInternetLinearLayout.setVisibility(View.VISIBLE);
-
-                } else {
-                    binding.NoInternetLinearLayout2.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-    }
+    private MovieDetailNetworkReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +53,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         this.setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.MovieDetailProgressBar.setVisibility(View.VISIBLE);
         binding.MovieDetailCardView.setVisibility(View.GONE);
 
         currentMovieID = getIntent().getStringExtra(SELECTED_MOVIE_ID);
@@ -107,7 +64,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                 .get(MovieDetailActivityViewModel.class);
 
         movieDetailActivityViewModel.getThrowableLiveData().observe(this, throwable -> {
-            binding.progressBar.setVisibility(View.GONE);
+            binding.MovieDetailProgressBar.setVisibility(View.GONE);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(getString(R.string.errorDescription));
             builder.setTitle(getString(R.string.errorTitle));
@@ -118,7 +75,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         });
 
         movieDetailActivityViewModel.getMoviesItemLiveData().observe(this, moviesItem -> {
-            this.moviesItem = moviesItem;
+            receiver.setMoviesItem(moviesItem);
             List<MoviesItemGenreIDs> moviesItemGenreIDsList = moviesItem.getMoviesItemGenreObject();
             Glide.with(this).load(image_base_url + moviesItem.getBackdrop_path()).placeholder(R.drawable.ic_no_image_available).centerCrop().into(binding.BackdropImageView);
             Glide.with(this).load(image_base_url + moviesItem.getPoster_path()).placeholder(R.drawable.ic_no_image_available).centerCrop().into(binding.PosterImageView);
@@ -135,12 +92,12 @@ public class MovieDetailActivity extends AppCompatActivity {
             }
             binding.GenresTextView.setText(genres.toString());
             binding.MovieDetailsAppBarTextView.setText(moviesItem.getTitle());
-            binding.progressBar.setVisibility(View.GONE);
+            binding.MovieDetailProgressBar.setVisibility(View.GONE);
             binding.MovieDetailCardView.setVisibility(View.VISIBLE);
         });
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receiver = new NetworkReceiver(movieDetailActivityViewModel, currentMovieID);
+        receiver = new MovieDetailNetworkReceiver(movieDetailActivityViewModel, currentMovieID, this);
         this.registerReceiver(receiver, filter);
     }
 

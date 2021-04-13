@@ -7,7 +7,7 @@
     tools:context=".Activity.MainActivity">
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/MainActivityProgressBar"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
-        android:id="@+id/NoInternetLinearLayout2"
+        android:id="@+id/MainActivityNoInternetLinearLayout2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -77,7 +77,7 @@
         app:layout_constraintBottom_toTopOf="@+id/MainViewPager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/NoInternetLinearLayout2"/>
+        app:layout_constraintTop_toBottomOf="@id/MainActivityNoInternetLinearLayout2"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/MainViewPager"
@@ -89,7 +89,7 @@
         app:layout_constraintTop_toBottomOf="@id/MainTabLayout" />
 
     <LinearLayout
-        android:id="@+id/NoInternetLinearLayout"
+        android:id="@+id/MainActivityNoInternetLinearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
